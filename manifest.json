@@ -1,12 +1,23 @@
 {
   "manifest_version": 3,
   "name": "ChatGPT DOM Trimmer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Collapse older ChatGPT turns to keep long chats responsive.",
   "permissions": ["storage"],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "action": {
     "default_title": "Open ChatGPT DOM Trimmer",
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    }
   },
   "content_scripts": [
     {
