@@ -3,7 +3,16 @@
   "name": "ChatGPT DOM Trimmer",
   "version": "0.1.0",
   "description": "Collapse older ChatGPT turns to keep long chats responsive.",
-  "permissions": ["storage", "sidePanel"],
+  "permissions": [
+    "storage",
+    "sidePanel"
+  ],
+  "action": {
+    "default_title": "Open ChatGPT DOM Trimmer"
+  },
+  "background": {
+    "service_worker": "service-worker.js"
+  },
   "side_panel": {
     "default_path": "sidepanel.html"
   },
@@ -13,8 +22,12 @@
         "https://chatgpt.com/*",
         "https://chat.openai.com/*"
       ],
-      "js": ["content.js"],
-      "css": ["content.css"],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
       "run_at": "document_idle"
     }
   ]
