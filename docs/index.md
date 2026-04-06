@@ -1,6 +1,6 @@
 # Privacy Policy for ChatGPT DOM Trimmer
 
-Last updated: [DATE]
+Last updated: 2026-04-06
 
 ChatGPT DOM Trimmer is a Chrome extension that helps improve the responsiveness of long ChatGPT web conversations by collapsing older conversation turns into placeholders.
 
