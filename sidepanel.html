@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ChatGPT DOM Trimmer</title>
+    <style>
+      body {
+        font:
+          14px system-ui,
+          sans-serif;
+        margin: 16px;
+      }
+      .row {
+        margin-bottom: 12px;
+      }
+      input[type="number"] {
+        width: 80px;
+      }
+      button {
+        margin-right: 8px;
+        margin-top: 8px;
+      }
+      .muted {
+        color: #666;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>ChatGPT DOM Trimmer</h2>
+
+    <div class="row">
+      <label>
+        Keep visible turns:
+        <input id="keepVisible" type="number" min="4" max="50" value="12" />
+      </label>
+    </div>
+
+    <div class="row">
+      <label>
+        Restore batch:
+        <input id="restoreBatch" type="number" min="1" max="50" value="10" />
+      </label>
+    </div>
+
+    <div class="row">
+      <label>
+        <input id="autoCollapse" type="checkbox" checked />
+        Auto-collapse as new turns arrive
+      </label>
+    </div>
+
+    <div class="row">
+      <button id="apply">Apply</button>
+      <button id="collapseNow">Collapse now</button>
+      <button id="restoreOneBatch">Restore batch</button>
+      <button id="restoreAll">Restore all</button>
+    </div>
+
+    <div class="row muted" id="status">Not connected yet.</div>
+
+    <script src="sidepanel.js"></script>
+  </body>
+</html>
