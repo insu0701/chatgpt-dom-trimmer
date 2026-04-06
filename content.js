@@ -302,6 +302,11 @@ function applySettings(nextSettings) {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   try {
+    if (message.type === 'ping') {
+      sendResponse({ status: 'ok' });
+      return;
+    }
+
     if (message.type === 'applySettings') {
       applySettings(message.settings || {});
       sendResponse({ status: 'Settings applied.' });

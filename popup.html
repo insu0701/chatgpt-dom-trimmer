@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ChatGPT DOM Trimmer</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+
+      body {
+        width: 340px;
+        margin: 0;
+        padding: 14px;
+        font:
+          13px/1.45 system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        box-sizing: border-box;
+      }
+
+      h1 {
+        margin: 0 0 6px;
+        font-size: 17px;
+        line-height: 1.2;
+      }
+
+      .subtitle {
+        margin: 0 0 14px;
+        color: #666;
+        font-size: 12px;
+      }
+
+      .notice {
+        margin: 0 0 14px;
+        padding: 10px 12px;
+        border: 1px solid rgba(127, 127, 127, 0.35);
+        border-radius: 10px;
+        background: rgba(127, 127, 127, 0.08);
+        font-size: 12px;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .section {
+        margin-bottom: 14px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      .label-text {
+        display: block;
+        margin-bottom: 4px;
+        font-weight: 600;
+      }
+
+      input[type="number"] {
+        width: 92px;
+        padding: 6px 8px;
+        border: 1px solid rgba(127, 127, 127, 0.35);
+        border-radius: 8px;
+        box-sizing: border-box;
+        font: inherit;
+      }
+
+      .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 2px;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .actions button:last-child {
+        grid-column: 1 / -1;
+      }
+
+      button {
+        appearance: none;
+        border: 1px solid rgba(127, 127, 127, 0.35);
+        border-radius: 10px;
+        padding: 9px 10px;
+        font: inherit;
+        cursor: pointer;
+        background: rgba(127, 127, 127, 0.08);
+      }
+
+      button:hover {
+        background: rgba(127, 127, 127, 0.14);
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+      .status {
+        margin-top: 12px;
+        font-size: 12px;
+        color: #666;
+        min-height: 18px;
+      }
+
+      .footnote {
+        margin: 10px 0 0;
+        font-size: 11px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ChatGPT DOM Trimmer</h1>
+    <p class="subtitle">
+      Keep long ChatGPT web conversations responsive by collapsing older turns
+      into placeholders.
+    </p>
+
+    <div id="unsupported" class="notice hidden">
+      Open a ChatGPT tab on <code>chatgpt.com</code> or
+      <code>chat.openai.com</code> to use this popup.
+    </div>
+
+    <div id="controls">
+      <div class="section">
+        <label>
+          <span class="label-text">Keep visible turns</span>
+          <input id="keepVisible" type="number" min="4" max="200" value="12" />
+        </label>
+
+        <label>
+          <span class="label-text">Restore batch size</span>
+          <input id="restoreBatch" type="number" min="1" max="200" value="10" />
+        </label>
+
+        <label class="checkbox-row">
+          <input id="autoCollapse" type="checkbox" checked />
+          <span>Auto-collapse as new turns arrive</span>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button id="collapseNow" type="button">Collapse now</button>
+        <button id="restoreOneBatch" type="button">Restore batch</button>
+        <button id="restoreAll" type="button">Restore all</button>
+      </div>
+
+      <div id="status" class="status">Loading…</div>
+
+      <p class="footnote">
+        Settings are stored locally in your browser. This does not delete
+        conversation history.
+      </p>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
