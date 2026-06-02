@@ -54,6 +54,45 @@ function compareDomOrder(a, b) {
   return 0;
 }
 
+function countContainedTurnRoots(root, candidates, limit = 2) {
+  let count = 0;
+
+  for (const candidate of candidates) {
+    if (root.contains(candidate)) {
+      count += 1;
+      if (count >= limit) return count;
+    }
+  }
+
+  return count;
+}
+
+function expandToStableTurnRoot(node, logicalTurnNodes) {
+  let current = node;
+
+  while (current.parentElement && current.parentElement.closest('main')) {
+    const parent = current.parentElement;
+
+    if (parent.matches('main, form, nav, aside, header, footer, [role="dialog"]')) {
+      break;
+    }
+
+    if (
+      parent.classList.contains('cgpt-trimmer-placeholder') ||
+      parent.closest('.cgpt-trimmer-placeholder')
+    ) {
+      break;
+    }
+
+    const containedTurns = countContainedTurnRoots(parent, logicalTurnNodes, 2);
+    if (containedTurns !== 1) break;
+
+    current = parent;
+  }
+
+  return current;
+}
+
 function isExcludedTurnNode(node) {
   if (!(node instanceof HTMLElement)) return true;
   if (!node.isConnected) return true;
@@ -77,16 +116,26 @@ function getTurnNodes() {
     document.querySelectorAll(selector).forEach((el) => raw.push(el));
   }
 
-  const deduped = [...new Set(raw)]
+  const matched = [...new Set(raw)]
     .filter((el) => !isExcludedTurnNode(el))
     .sort(compareDomOrder);
 
-  // Keep only top-level candidates so we do not double-count nested wrappers.
-  const topLevel = deduped.filter((node, idx) => {
-    return !deduped.some((other, j) => j !== idx && other.contains(node));
+  // Keep only the outermost selector-matched candidates so nested wrappers do
+  // not double-count the same logical turn.
+  const logicalTurns = matched.filter((node, idx) => {
+    return !matched.some((other, j) => j !== idx && other.contains(node));
   });
 
-  return topLevel;
+  // ChatGPT often inserts transient layout wrappers around each turn. Climb
+  // through wrappers that contain exactly one logical turn, but stop before the
+  // shared conversation container that contains multiple turns.
+  const roots = [...new Set(logicalTurns.map((node) => expandToStableTurnRoot(node, logicalTurns)))]
+    .filter((el) => !isExcludedTurnNode(el))
+    .sort(compareDomOrder);
+
+  return roots.filter((node, idx) => {
+    return !roots.some((other, j) => j !== idx && other.contains(node));
+  });
 }
 
 function splitIntoChunks(items, size) {
@@ -143,6 +192,7 @@ function createHiddenBatch(chunk) {
   const batchId = batchIdCounter++;
   const parentGroups = partitionChunkByParent(chunk);
   const subgroups = [];
+  let sharedPlaceholder = null;
 
   for (const group of parentGroups) {
     const { parent, nodes } = group;
@@ -150,10 +200,14 @@ function createHiddenBatch(chunk) {
     if (!parent || !firstNode || !firstNode.isConnected) continue;
 
     const marker = document.createComment(`cgpt-trimmer-marker:${batchId}`);
-    const placeholder = makePlaceholder(nodes.length, batchId);
+    const ownsVisiblePlaceholder = sharedPlaceholder === null;
 
     parent.insertBefore(marker, firstNode);
-    parent.insertBefore(placeholder, firstNode);
+
+    if (ownsVisiblePlaceholder) {
+      sharedPlaceholder = makePlaceholder(chunk.length, batchId);
+      parent.insertBefore(sharedPlaceholder, firstNode);
+    }
 
     for (const node of nodes) {
       node.remove();
@@ -162,7 +216,7 @@ function createHiddenBatch(chunk) {
     subgroups.push({
       parent,
       marker,
-      placeholder,
+      placeholder: ownsVisiblePlaceholder ? sharedPlaceholder : null,
       nodes
     });
   }
@@ -216,15 +270,22 @@ function restoreBatchObject(batch) {
     try {
       for (const subgroup of batch.subgroups) {
         const { marker, placeholder, nodes } = subgroup;
-        const parent = marker.parentNode;
-        if (!parent) continue;
+        const parent = marker?.parentNode;
+
+        if (!parent) {
+          if (placeholder?.parentNode) placeholder.remove();
+          continue;
+        }
 
         for (const node of nodes) {
           parent.insertBefore(node, marker);
           restored += 1;
         }
 
-        placeholder.remove();
+        if (placeholder?.parentNode) {
+          placeholder.remove();
+        }
+
         marker.remove();
       }
     } finally {

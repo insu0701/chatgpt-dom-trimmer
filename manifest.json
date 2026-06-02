@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "ChatGPT DOM Trimmer",
-  "version": "0.2.1",
+  "name": "Long Chat Helper for ChatGPT",
+  "version": "0.2.2",
   "description": "Collapse older ChatGPT turns to keep long chats responsive.",
   "permissions": ["storage"],
   "icons": {
